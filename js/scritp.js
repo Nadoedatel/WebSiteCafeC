@@ -76,3 +76,40 @@
         // Инициализация индикаторов при загрузке страницы
         updateIndicators();
         updateContent();
+
+         // Выберите все ссылки с хэшами
+    $('a[href*="#"]')
+    // Удалить ссылки, которые на самом деле ни на что не ссылаются
+    .not('[href="#"]')
+    .not('[href="#0"]')
+    .click(function(event) {
+        // Ссылки на странице
+        if (
+            location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') 
+            && 
+            location.hostname == this.hostname
+        ) {
+            // Определите элемент, к которому нужно перейти
+            var target = $(this.hash);
+            target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+            // Существует ли цель прокрутки?
+            if (target.length) {
+                // Предотвращать использование по умолчанию можно только в том случае, если анимация действительно должна произойти
+                event.preventDefault();
+                $('html, body').animate({
+                    scrollTop: target.offset().top
+                }, 1000, function() {
+                    // Обратный вызов после анимации
+                    // Необходимо изменить фокус!
+                    var $target = $(target);
+                    $target.focus();
+                    if ($target.is(":focus")) { // Проверка того, была ли цель сфокусирована
+                        return false;
+                    } else {
+                        $target.attr('tabindex','-1'); // Добавление tabindex для элементов, которые нельзя сфокусировать
+                        $target.focus(); // Снова установите фокусировку
+                    };
+                });
+            }
+        }
+    });
